@@ -13,6 +13,7 @@ let events = JSON.parse(localStorage.getItem('studygotchi-events')) || [
   { id: 6, title: 'อ่านเคมีอินทรีย์', day: 6, start: '14:00', end: '16:00', type: 'reading', description: '' }
 ];
 let editingId = null;
+const plannerToday = new Date(2025, 5, 18);
 
 const $ = (selector) => document.querySelector(selector);
 const timeToMinutes = (time) => { const [hours, minutes] = time.split(':').map(Number); return hours * 60 + minutes; };
@@ -46,7 +47,9 @@ function renderCalendar() {
     const element = document.createElement('article');
     element.className = `event ${colors[event.type] || colors.reading}`;
     element.dataset.type = event.type;
-    element.style.cssText = `left:calc(${event.day} * 14.2857% + 5px);top:${top}px;width:calc(14.2857% - 10px);height:${height}px`;
+    const eventDate = event.date ? new Date(`${event.date}T00:00:00`) : new Date(weekStart.getFullYear(), weekStart.getMonth(), weekStart.getDate() + event.day);
+    const dayOffset = Math.round((eventDate - weekStart) / 86400000);
+    element.style.cssText = `left:calc(${dayOffset} * 14.2857% + 5px);top:${top}px;width:calc(14.2857% - 10px);height:${height}px`;
     element.innerHTML = `<div class="event-title">${event.title}</div><div class="event-time">${formatTime(event.start)} - ${formatTime(event.end)}</div>`;
     element.addEventListener('click', () => openModal(event));
     $('#weekGrid').appendChild(element);
@@ -68,12 +71,48 @@ function openModal(event = null) {
   $('#eventForm').title.focus();
 }
 function closeModal() { $('#modalBackdrop').hidden = true; }
+function closePlanner() { $('#plannerBackdrop').hidden = true; }
+
+function updatePlanPreview() {
+  const form = $('#plannerForm');
+  const days = Number(form.days.value) || 0;
+  const start = form.start.value;
+  const end = form.end.value;
+  if (!start || !end || timeToMinutes(end) <= timeToMinutes(start)) {
+    $('#planPreview').textContent = 'กรุณาเลือกช่วงเวลาให้เวลาสิ้นสุดหลังเวลาเริ่มต้น';
+    return;
+  }
+  const duration = timeToMinutes(end) - timeToMinutes(start);
+  const hours = (duration / 60).toFixed(1).replace('.0', '');
+  $('#planPreview').textContent = `ระบบจะสร้าง ${days} เซสชัน รวม ${hours * days} ชั่วโมง วันละ ${hours} ชั่วโมง เริ่มตั้งแต่วันนี้`;
+}
 
 $('#daySelect').innerHTML = dayNames.slice(1).map((name, index) => `<option value="${index + 1}">${name}</option>`).join('');
-$('#createButton').addEventListener('click', () => openModal());
+$('#createButton').addEventListener('click', () => { $('#plannerBackdrop').hidden = false; updatePlanPreview(); $('#plannerForm').subject.focus(); });
 $('#closeModal').addEventListener('click', closeModal);
 $('#cancelModal').addEventListener('click', closeModal);
 $('#modalBackdrop').addEventListener('click', (event) => { if (event.target.id === 'modalBackdrop') closeModal(); });
+$('#closePlanner').addEventListener('click', closePlanner);
+$('#cancelPlanner').addEventListener('click', closePlanner);
+$('#plannerBackdrop').addEventListener('click', (event) => { if (event.target.id === 'plannerBackdrop') closePlanner(); });
+$('#plannerForm').addEventListener('input', updatePlanPreview);
+$('#plannerForm').addEventListener('submit', (event) => {
+  event.preventDefault();
+  const data = Object.fromEntries(new FormData(event.target));
+  const duration = timeToMinutes(data.end) - timeToMinutes(data.start);
+  const days = Number(data.days);
+  if (duration <= 0 || days < 1 || days > 60) return;
+  for (let index = 0; index < days; index += 1) {
+    const date = new Date(plannerToday);
+    date.setDate(date.getDate() + index);
+    events.push({ id: Date.now() + index, title: `${data.subject} · วันที่ ${index + 1}`, date: date.toISOString().slice(0, 10), start: data.start, end: data.end, type: 'reading', description: `เซสชันที่ ${index + 1} จาก ${days}` });
+  }
+  saveEvents();
+  weekStart = new Date(plannerToday);
+  weekStart.setDate(weekStart.getDate() - weekStart.getDay());
+  renderCalendar();
+  closePlanner();
+});
 $('#eventForm').addEventListener('submit', (event) => {
   event.preventDefault();
   const data = Object.fromEntries(new FormData(event.target));
