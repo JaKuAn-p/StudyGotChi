@@ -2,8 +2,9 @@ const dayNames = ['อาทิตย์', 'จันทร์', 'อังค�
 const monthNames = ['มกราคม', 'กุมภาพันธ์', 'มีนาคม', 'เมษายน', 'พฤษภาคม', 'มิถุนายน', 'กรกฎาคม', 'สิงหาคม', 'กันยายน', 'ตุลาคม', 'พฤศจิกายน', 'ธันวาคม'];
 const shortDays = ['อา.', 'จ.', 'อ.', 'พ.', 'พฤ.', 'ศ.', 'ส.'];
 const colors = { reading: 'event-reading', review: 'event-review', exam: 'event-exam' };
-const today = new Date(2025, 5, 18);
-let weekStart = new Date(2025, 5, 15);
+const today = new Date();
+let weekStart = new Date(today);
+weekStart.setDate(weekStart.getDate() - weekStart.getDay());
 let events = JSON.parse(localStorage.getItem('studygotchi-events')) || [
   { id: 1, title: 'อ่านชีวะ บทที่ 3', day: 1, start: '09:00', end: '10:30', type: 'reading', description: 'สรุปเรื่องเซลล์และการลำเลียงสาร' },
   { id: 2, title: 'ทำโจทย์คณิต ชุดที่ 2', day: 2, start: '13:00', end: '14:30', type: 'review', description: '' },
@@ -13,7 +14,9 @@ let events = JSON.parse(localStorage.getItem('studygotchi-events')) || [
   { id: 6, title: 'อ่านเคมีอินทรีย์', day: 6, start: '14:00', end: '16:00', type: 'reading', description: '' }
 ];
 let editingId = null;
-const plannerToday = new Date(2025, 5, 18);
+const plannerToday = new Date(today);
+let reminderEvent = null;
+let timerInterval = null;
 
 const $ = (selector) => document.querySelector(selector);
 const timeToMinutes = (time) => { const [hours, minutes] = time.split(':').map(Number); return hours * 60 + minutes; };
@@ -73,6 +76,58 @@ function openModal(event = null) {
 function closeModal() { $('#modalBackdrop').hidden = true; }
 function closePlanner() { $('#plannerBackdrop').hidden = true; }
 
+function eventDateForToday(event) {
+  if (event.date) return new Date(`${event.date}T${event.start}:00`);
+  const date = new Date(today);
+  date.setDate(date.getDate() + (Number(event.day) - 1 - date.getDay() + 7) % 7);
+  return new Date(`${date.toISOString().slice(0, 10)}T${event.start}:00`);
+}
+
+function reminderKey(event, date = new Date()) { return `${event.id}-${date.toISOString().slice(0, 10)}`; }
+
+function showReminder(event) {
+  reminderEvent = event;
+  $('#reminderTitle').textContent = event.title;
+  $('#reminderDescription').textContent = event.description || `${formatTime(event.start)} - ${formatTime(event.end)}`;
+  $('#reminderBackdrop').hidden = false;
+}
+
+function startReading() {
+  if (!reminderEvent) return;
+  const duration = Math.max(timeToMinutes(reminderEvent.end) - timeToMinutes(reminderEvent.start), 1) * 60;
+  $('#timerTitle').textContent = reminderEvent.title;
+  $('#reminderBackdrop').hidden = true;
+  $('#timerBackdrop').hidden = false;
+  let remaining = duration;
+  const updateTimer = () => {
+    const hours = Math.floor(remaining / 3600);
+    const minutes = Math.floor((remaining % 3600) / 60);
+    const seconds = remaining % 60;
+    $('#countdown').textContent = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+    if (remaining <= 0) { clearInterval(timerInterval); return; }
+    remaining -= 1;
+  };
+  clearInterval(timerInterval);
+  updateTimer();
+  timerInterval = setInterval(updateTimer, 1000);
+}
+
+function checkReminders() {
+  if (reminderEvent || !$('#reminderBackdrop').hidden || !$('#timerBackdrop').hidden) return;
+  const now = new Date();
+  const event = events.find((item) => {
+    const start = eventDateForToday(item);
+    const end = new Date(`${start.toISOString().slice(0, 10)}T${item.end}:00`);
+    const key = reminderKey(item, now);
+    const snoozedUntil = Number(localStorage.getItem(`studygotchi-snooze-${key}`) || 0);
+    return now >= start && now < end && now.getTime() >= snoozedUntil && !localStorage.getItem(`studygotchi-reminded-${key}`);
+  });
+  if (event) {
+    localStorage.setItem(`studygotchi-reminded-${reminderKey(event, now)}`, '1');
+    showReminder(event);
+  }
+}
+
 function updatePlanPreview() {
   const form = $('#plannerForm');
   const days = Number(form.days.value) || 0;
@@ -124,7 +179,17 @@ $('#eventForm').addEventListener('submit', (event) => {
 $('#deleteEvent').addEventListener('click', () => { events = events.filter((item) => item.id !== editingId); saveEvents(); renderCalendar(); closeModal(); });
 $('#prevWeek').addEventListener('click', () => { weekStart.setDate(weekStart.getDate() - 7); renderCalendar(); });
 $('#nextWeek').addEventListener('click', () => { weekStart.setDate(weekStart.getDate() + 7); renderCalendar(); });
-$('#todayButton').addEventListener('click', () => { weekStart = new Date(2025, 5, 15); renderCalendar(); });
+$('#todayButton').addEventListener('click', () => { weekStart = new Date(today); weekStart.setDate(weekStart.getDate() - weekStart.getDay()); renderCalendar(); });
+$('#snoozeReminder').addEventListener('click', () => {
+  if (!reminderEvent) return;
+  const key = reminderKey(reminderEvent);
+  localStorage.setItem(`studygotchi-snooze-${key}`, String(Date.now() + 5 * 60 * 1000));
+  localStorage.removeItem(`studygotchi-reminded-${key}`);
+  reminderEvent = null;
+  $('#reminderBackdrop').hidden = true;
+});
+$('#startReading').addEventListener('click', startReading);
+$('#finishReading').addEventListener('click', () => { clearInterval(timerInterval); $('#timerBackdrop').hidden = true; reminderEvent = null; });
 document.querySelectorAll('[data-filter]').forEach((checkbox) => checkbox.addEventListener('change', () => {
   const filters = [...document.querySelectorAll('[data-filter]')];
   const showAll = filters.find((item) => item.dataset.filter === 'all').checked;
@@ -134,3 +199,5 @@ document.querySelectorAll('[data-filter]').forEach((checkbox) => checkbox.addEve
   });
 }));
 renderCalendar();
+checkReminders();
+setInterval(checkReminders, 1000);
