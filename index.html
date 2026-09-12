@@ -7,11 +7,11 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Kanit:wght@400;500;600&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="styles.css?v=6" />
+    <link rel="stylesheet" href="styles.css?v=7" />
   </head>
   <body>
     <div class="login-backdrop" id="loginBackdrop">
-      <form class="login-card" id="loginForm">
+      <form class="login-card" id="loginForm" novalidate>
         <div class="login-mark">✦</div>
         <span class="eyebrow">STUDY SPACE</span>
         <h1>ยินดีต้อนรับกลับ</h1>
@@ -60,6 +60,6 @@
     <div class="modal-backdrop" id="modalBackdrop" hidden><form class="event-modal" id="eventForm"><div class="modal-header"><div><span class="eyebrow">เพิ่มตารางใหม่</span><h2 id="modalTitle">วางแผนการอ่าน</h2></div><button type="button" class="close-button" id="closeModal" aria-label="ปิด">×</button></div><label>หัวข้อ<input name="title" required placeholder="เช่น อ่านชีวะ บทที่ 3" /></label><div class="form-row"><label>วัน<select name="day" id="daySelect"></select></label><label>สี<select name="type"><option value="reading">อ่านหนังสือ</option><option value="review">ทบทวน / ทำโจทย์</option><option value="exam">สอบและเดดไลน์</option></select></label></div><div class="form-row"><label>เริ่ม<input name="start" type="time" value="09:00" required /></label><label>จบ<input name="end" type="time" value="10:00" required /></label></div><label>รายละเอียด<textarea name="description" rows="3" placeholder="โน้ตสั้นๆ สำหรับเซสชันนี้"></textarea></label><div class="modal-actions"><button type="button" class="delete-button" id="deleteEvent" hidden>ลบตาราง</button><button type="button" class="cancel-button" id="cancelModal">ยกเลิก</button><button type="submit" class="save-button">บันทึกตาราง</button></div></form></div>
     <div class="modal-backdrop" id="reminderBackdrop" hidden><section class="event-modal reminder-modal" aria-labelledby="reminderTitle"><span class="reminder-icon">✦</span><span class="eyebrow">ถึงเวลาอ่านหนังสือแล้ว</span><h2 id="reminderTitle">เริ่มเซสชันของคุณ</h2><p id="reminderDescription"></p><div class="reminder-actions"><button type="button" class="snooze-button" id="snoozeReminder">ขออีก 5 นาที</button><button type="button" class="start-button" id="startReading">เริ่มอ่าน!!!</button></div></section></div>
     <div class="modal-backdrop" id="timerBackdrop" hidden><section class="event-modal timer-modal" aria-labelledby="timerTitle"><span class="eyebrow">กำลังโฟกัส</span><h2 id="timerTitle"></h2><div class="countdown" id="countdown">00:00:00</div><p>ตั้งใจอ่านให้เต็มที่ แล้วค่อยพักเมื่อหมดเวลา</p><button type="button" class="finish-button" id="finishReading">จบการอ่าน</button></section></div>
-    <script src="app.js?v=6"></script>
+    <script src="app.js?v=7"></script>
   </body>
 </html>

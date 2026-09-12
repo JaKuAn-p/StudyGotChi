@@ -40,12 +40,13 @@ $('#loginForm').addEventListener('submit', (event) => {
   $('#loginError').hidden = true;
   $('#signedInUser').textContent = username;
   $('#userAvatar').textContent = username.charAt(0).toUpperCase();
-  $('#loginBackdrop').hidden = true;
+  $('#loginBackdrop').classList.add('is-hidden');
 });
 $('#userAvatar').addEventListener('click', () => {
   $('#loginForm').reset();
   $('#loginBackdrop').hidden = false;
-  $('#loginForm').username.focus();
+  $('#loginBackdrop').classList.remove('is-hidden');
+  $('#loginForm input[name="username"]').focus();
 });
 
 function renderPet() {
