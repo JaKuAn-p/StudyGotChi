@@ -29,7 +29,15 @@ const savePet = () => localStorage.setItem('studygotchi-pet', JSON.stringify(pet
 
 $('#loginForm').addEventListener('submit', (event) => {
   event.preventDefault();
-  const username = new FormData(event.target).get('username').trim();
+  const usernameInput = $('#loginForm input[name="username"]');
+  const passwordInput = $('#loginForm input[name="password"]');
+  const username = usernameInput.value.trim();
+  const password = passwordInput.value.trim();
+  if (!username || !password) {
+    $('#loginError').hidden = false;
+    return;
+  }
+  $('#loginError').hidden = true;
   $('#signedInUser').textContent = username;
   $('#userAvatar').textContent = username.charAt(0).toUpperCase();
   $('#loginBackdrop').hidden = true;
