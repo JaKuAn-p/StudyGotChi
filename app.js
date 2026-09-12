@@ -27,6 +27,14 @@ const formatTime = (time) => time.replace(':00', '.00').replace(':30', '.30');
 const saveEvents = () => localStorage.setItem('studygotchi-events', JSON.stringify(events));
 const savePet = () => localStorage.setItem('studygotchi-pet', JSON.stringify(pet));
 
+$('#loginForm').addEventListener('submit', (event) => {
+  event.preventDefault();
+  const username = new FormData(event.target).get('username').trim();
+  $('#signedInUser').textContent = username;
+  $('#userAvatar').textContent = username.charAt(0).toUpperCase();
+  $('#loginBackdrop').hidden = true;
+});
+
 function renderPet() {
   $('#petLevel').textContent = `LV. ${pet.level}`;
   $('#petSessions').textContent = `${pet.sessions} วัน`;
