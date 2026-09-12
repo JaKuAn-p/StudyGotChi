@@ -18,7 +18,7 @@
         <div class="mini-calendar" id="miniCalendar"></div>
 
         <div class="sidebar-section">
-          <div class="section-title"><span>ปฏิทินของฉัน</span><button class="icon-button small" aria-label="ตั้งค่าปฏิทิน">•••</button></div>
+          <div class="section-title"><span>ปฏิทินของฉัน</span></div>
           <label class="calendar-filter"><input type="checkbox" checked data-filter="all" /> <span class="dot dot-all"></span> ตารางทั้งหมด</label>
           <label class="calendar-filter"><input type="checkbox" checked data-filter="reading" /> <span class="dot dot-reading"></span> อ่านหนังสือ</label>
           <label class="calendar-filter"><input type="checkbox" checked data-filter="review" /> <span class="dot dot-review"></span> ทบทวน / ทำโจทย์</label>
@@ -32,10 +32,8 @@
       <main class="main-content">
         <header class="topbar">
           <div class="topbar-left"><button class="today-button" id="todayButton">วันนี้</button><div class="nav-arrows"><button class="icon-button" id="prevWeek" aria-label="สัปดาห์ก่อน">‹</button><button class="icon-button" id="nextWeek" aria-label="สัปดาห์ถัดไป">›</button></div><h1 id="monthTitle">มิถุนายน 2025</h1></div>
-          <div class="topbar-right"><button class="icon-button search-button" id="searchButton" aria-label="ค้นหา">⌕</button><button class="view-button">สัปดาห์ <span>⌄</span></button><div class="avatar">ช</div></div>
+          <div class="topbar-right"><div class="avatar">ช</div></div>
         </header>
-
-        <section class="focus-strip"><div class="focus-copy"><span class="eyebrow">เป้าหมายสัปดาห์นี้</span><strong>สะสมเวลาอ่านให้ครบ 12 ชั่วโมง</strong></div><div class="progress-wrap"><div class="progress-label"><span><strong id="hoursDone">4.5</strong> / 12 ชม.</span><span id="progressPercent">38%</span></div><div class="progress-track"><div class="progress-value" id="progressValue"></div></div></div><button class="edit-goal" aria-label="แก้ไขเป้าหมาย">✎</button></section>
 
         <section class="calendar-card">
           <div class="week-header" id="weekHeader"><div class="timezone">GMT+7</div></div>

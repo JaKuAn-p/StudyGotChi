@@ -26,13 +26,15 @@ const saveEvents = () => localStorage.setItem('studygotchi-events', JSON.stringi
 function renderMiniCalendar() {
   const first = new Date(weekStart.getFullYear(), weekStart.getMonth(), 1);
   const totalDays = new Date(weekStart.getFullYear(), weekStart.getMonth() + 1, 0).getDate();
-  let html = `<div class="mini-head"><strong>${monthNames[weekStart.getMonth()]} ${weekStart.getFullYear() + 543}</strong><span class="mini-nav">‹　›</span></div><div class="mini-week">${shortDays.map((day) => `<span>${day}</span>`).join('')}</div><div class="mini-dates">`;
+  let html = `<div class="mini-head"><strong>${monthNames[weekStart.getMonth()]} ${weekStart.getFullYear() + 543}</strong><span class="mini-nav"><button class="mini-nav-button" id="miniPrev" aria-label="เดือนก่อน">‹</button><button class="mini-nav-button" id="miniNext" aria-label="เดือนถัดไป">›</button></span></div><div class="mini-week">${shortDays.map((day) => `<span>${day}</span>`).join('')}</div><div class="mini-dates">`;
   for (let i = 0; i < first.getDay(); i += 1) html += '<span class="muted">·</span>';
   for (let day = 1; day <= totalDays; day += 1) {
     const selected = day === today.getDate() && weekStart.getMonth() === today.getMonth() ? 'selected' : '';
     html += `<span class="${selected}">${day}</span>`;
   }
   $('#miniCalendar').innerHTML = `${html}</div>`;
+  $('#miniPrev').addEventListener('click', () => { weekStart.setMonth(weekStart.getMonth() - 1); renderCalendar(); });
+  $('#miniNext').addEventListener('click', () => { weekStart.setMonth(weekStart.getMonth() + 1); renderCalendar(); });
 }
 
 function renderCalendar() {
