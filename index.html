@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="th">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>StudyGotChi | ตารางอ่านหนังสือ</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Kanit:wght@400;500;600&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar">
+        <div class="brand"><span class="brand-mark">✦</span><span>StudyGotChi</span></div>
+        <button class="create-button" id="createButton"><span>＋</span> สร้างตาราง</button>
+
+        <div class="mini-calendar" id="miniCalendar"></div>
+
+        <div class="sidebar-section">
+          <div class="section-title"><span>ปฏิทินของฉัน</span><button class="icon-button small" aria-label="ตั้งค่าปฏิทิน">•••</button></div>
+          <label class="calendar-filter"><input type="checkbox" checked data-filter="all" /> <span class="dot dot-all"></span> ตารางทั้งหมด</label>
+          <label class="calendar-filter"><input type="checkbox" checked data-filter="reading" /> <span class="dot dot-reading"></span> อ่านหนังสือ</label>
+          <label class="calendar-filter"><input type="checkbox" checked data-filter="review" /> <span class="dot dot-review"></span> ทบทวน / ทำโจทย์</label>
+          <label class="calendar-filter"><input type="checkbox" checked data-filter="exam" /> <span class="dot dot-exam"></span> สอบและเดดไลน์</label>
+        </div>
+
+        <div class="sidebar-tip"><span class="tip-icon">✦</span><div><strong>เคล็ดลับวันนี้</strong><p>อ่าน 25 นาที พัก 5 นาที ช่วยให้โฟกัสดีขึ้นนะ</p></div></div>
+        <div class="sidebar-footer"><span>Study space</span><span>v1.0</span></div>
+      </aside>
+
+      <main class="main-content">
+        <header class="topbar">
+          <div class="topbar-left"><button class="today-button" id="todayButton">วันนี้</button><div class="nav-arrows"><button class="icon-button" id="prevWeek" aria-label="สัปดาห์ก่อน">‹</button><button class="icon-button" id="nextWeek" aria-label="สัปดาห์ถัดไป">›</button></div><h1 id="monthTitle">มิถุนายน 2025</h1></div>
+          <div class="topbar-right"><button class="icon-button search-button" id="searchButton" aria-label="ค้นหา">⌕</button><button class="view-button">สัปดาห์ <span>⌄</span></button><div class="avatar">ช</div></div>
+        </header>
+
+        <section class="focus-strip"><div class="focus-copy"><span class="eyebrow">เป้าหมายสัปดาห์นี้</span><strong>สะสมเวลาอ่านให้ครบ 12 ชั่วโมง</strong></div><div class="progress-wrap"><div class="progress-label"><span><strong id="hoursDone">4.5</strong> / 12 ชม.</span><span id="progressPercent">38%</span></div><div class="progress-track"><div class="progress-value" id="progressValue"></div></div></div><button class="edit-goal" aria-label="แก้ไขเป้าหมาย">✎</button></section>
+
+        <section class="calendar-card">
+          <div class="week-header" id="weekHeader"><div class="timezone">GMT+7</div></div>
+          <div class="calendar-body"><div class="time-column" id="timeColumn"></div><div class="week-grid" id="weekGrid"></div><div class="current-time-line" id="currentTimeLine"><span></span></div></div>
+        </section>
+      </main>
+    </div>
+
+    <div class="modal-backdrop" id="modalBackdrop" hidden><form class="event-modal" id="eventForm"><div class="modal-header"><div><span class="eyebrow">เพิ่มตารางใหม่</span><h2 id="modalTitle">วางแผนการอ่าน</h2></div><button type="button" class="close-button" id="closeModal" aria-label="ปิด">×</button></div><label>หัวข้อ<input name="title" required placeholder="เช่น อ่านชีวะ บทที่ 3" /></label><div class="form-row"><label>วัน<select name="day" id="daySelect"></select></label><label>สี<select name="type"><option value="reading">อ่านหนังสือ</option><option value="review">ทบทวน / ทำโจทย์</option><option value="exam">สอบและเดดไลน์</option></select></label></div><div class="form-row"><label>เริ่ม<input name="start" type="time" value="09:00" required /></label><label>จบ<input name="end" type="time" value="10:00" required /></label></div><label>รายละเอียด<textarea name="description" rows="3" placeholder="โน้ตสั้นๆ สำหรับเซสชันนี้"></textarea></label><div class="modal-actions"><button type="button" class="delete-button" id="deleteEvent" hidden>ลบตาราง</button><button type="button" class="cancel-button" id="cancelModal">ยกเลิก</button><button type="submit" class="save-button">บันทึกตาราง</button></div></form></div>
+    <script src="app.js"></script>
+  </body>
+</html>
