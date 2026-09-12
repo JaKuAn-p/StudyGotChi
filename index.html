@@ -17,13 +17,14 @@
 
         <div class="mini-calendar" id="miniCalendar"></div>
 
-        <div class="sidebar-section">
-          <div class="section-title"><span>ปฏิทินของฉัน</span></div>
-          <label class="calendar-filter"><input type="checkbox" checked data-filter="all" /> <span class="dot dot-all"></span> ตารางทั้งหมด</label>
-          <label class="calendar-filter"><input type="checkbox" checked data-filter="reading" /> <span class="dot dot-reading"></span> อ่านหนังสือ</label>
-          <label class="calendar-filter"><input type="checkbox" checked data-filter="review" /> <span class="dot dot-review"></span> ทบทวน / ทำโจทย์</label>
-          <label class="calendar-filter"><input type="checkbox" checked data-filter="exam" /> <span class="dot dot-exam"></span> สอบและเดดไลน์</label>
-        </div>
+        <section class="pet-panel" aria-labelledby="petName">
+          <div class="pet-panel-heading"><span class="eyebrow">เพื่อนอ่านหนังสือ</span><span class="pet-level" id="petLevel">LV. 1</span></div>
+          <div class="pet-screen"><div class="pixel-pet" id="pixelPet" aria-label="สัตว์เลี้ยงของคุณ"><span class="pet-ear left"></span><span class="pet-ear right"></span><span class="pet-eye left"></span><span class="pet-eye right"></span><span class="pet-mouth"></span></div><span class="pet-z" id="petZ">Z</span></div>
+          <h2 id="petName">Chibi</h2>
+          <p class="pet-status" id="petStatus">พร้อมโตไปกับคุณ</p>
+          <div class="pet-stats"><span>หัวใจ <strong id="petHearts">♥♥♥</strong></span><span>อ่านครบ <strong id="petSessions">0 วัน</strong></span></div>
+          <button class="revive-button" id="revivePet" hidden>เริ่มชีวิตใหม่</button>
+        </section>
 
         <div class="sidebar-tip"><span class="tip-icon">✦</span><div><strong>เคล็ดลับวันนี้</strong><p>อ่าน 25 นาที พัก 5 นาที ช่วยให้โฟกัสดีขึ้นนะ</p></div></div>
         <div class="sidebar-footer"><span>Study space</span><span>v1.0</span></div>

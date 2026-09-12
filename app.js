@@ -17,11 +17,42 @@ let editingId = null;
 const plannerToday = new Date(today);
 let reminderEvent = null;
 let timerInterval = null;
+let timerRemaining = 0;
+let timerCompleted = false;
+let pet = JSON.parse(localStorage.getItem('studygotchi-pet')) || { alive: true, sessions: 0, level: 1 };
 
 const $ = (selector) => document.querySelector(selector);
 const timeToMinutes = (time) => { const [hours, minutes] = time.split(':').map(Number); return hours * 60 + minutes; };
 const formatTime = (time) => time.replace(':00', '.00').replace(':30', '.30');
 const saveEvents = () => localStorage.setItem('studygotchi-events', JSON.stringify(events));
+const savePet = () => localStorage.setItem('studygotchi-pet', JSON.stringify(pet));
+
+function renderPet() {
+  $('#petLevel').textContent = `LV. ${pet.level}`;
+  $('#petSessions').textContent = `${pet.sessions} วัน`;
+  $('#petHearts').textContent = pet.alive ? '♥♥♥' : '♡♡♡';
+  $('#petStatus').textContent = pet.alive ? (pet.sessions ? 'แข็งแรงขึ้นจากการอ่าน' : 'พร้อมโตไปกับคุณ') : 'หมดแรงเพราะหยุดอ่านก่อนเวลา';
+  $('#pixelPet').classList.toggle('dead', !pet.alive);
+  $('#petZ').hidden = pet.alive;
+  $('#revivePet').hidden = pet.alive;
+}
+
+function completePetSession() {
+  if (timerCompleted || !reminderEvent) return;
+  timerCompleted = true;
+  pet.alive = true;
+  pet.sessions += 1;
+  pet.level = Math.floor(pet.sessions / 3) + 1;
+  savePet();
+  renderPet();
+}
+
+function killPet() {
+  if (timerCompleted || !reminderEvent) return;
+  pet.alive = false;
+  savePet();
+  renderPet();
+}
 
 function renderMiniCalendar() {
   const first = new Date(weekStart.getFullYear(), weekStart.getMonth(), 1);
@@ -96,18 +127,18 @@ function showReminder(event) {
 
 function startReading() {
   if (!reminderEvent) return;
-  const duration = Math.max(timeToMinutes(reminderEvent.end) - timeToMinutes(reminderEvent.start), 1) * 60;
+  timerRemaining = Math.max(timeToMinutes(reminderEvent.end) - timeToMinutes(reminderEvent.start), 1) * 60;
+  timerCompleted = false;
   $('#timerTitle').textContent = reminderEvent.title;
   $('#reminderBackdrop').hidden = true;
   $('#timerBackdrop').hidden = false;
-  let remaining = duration;
   const updateTimer = () => {
-    const hours = Math.floor(remaining / 3600);
-    const minutes = Math.floor((remaining % 3600) / 60);
-    const seconds = remaining % 60;
+    const hours = Math.floor(timerRemaining / 3600);
+    const minutes = Math.floor((timerRemaining % 3600) / 60);
+    const seconds = timerRemaining % 60;
     $('#countdown').textContent = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-    if (remaining <= 0) { clearInterval(timerInterval); return; }
-    remaining -= 1;
+    if (timerRemaining <= 0) { clearInterval(timerInterval); completePetSession(); return; }
+    timerRemaining -= 1;
   };
   clearInterval(timerInterval);
   updateTimer();
@@ -191,15 +222,9 @@ $('#snoozeReminder').addEventListener('click', () => {
   $('#reminderBackdrop').hidden = true;
 });
 $('#startReading').addEventListener('click', startReading);
-$('#finishReading').addEventListener('click', () => { clearInterval(timerInterval); $('#timerBackdrop').hidden = true; reminderEvent = null; });
-document.querySelectorAll('[data-filter]').forEach((checkbox) => checkbox.addEventListener('change', () => {
-  const filters = [...document.querySelectorAll('[data-filter]')];
-  const showAll = filters.find((item) => item.dataset.filter === 'all').checked;
-  document.querySelectorAll('.event').forEach((eventElement) => {
-    const matchingFilter = filters.find((item) => item.dataset.filter === eventElement.dataset.type);
-    eventElement.style.display = showAll || matchingFilter?.checked ? '' : 'none';
-  });
-}));
+$('#finishReading').addEventListener('click', () => { killPet(); clearInterval(timerInterval); $('#timerBackdrop').hidden = true; reminderEvent = null; });
+$('#revivePet').addEventListener('click', () => { pet = { alive: true, sessions: 0, level: 1 }; savePet(); renderPet(); });
 renderCalendar();
+renderPet();
 checkReminders();
 setInterval(checkReminders, 1000);
