@@ -34,6 +34,11 @@ $('#loginForm').addEventListener('submit', (event) => {
   $('#userAvatar').textContent = username.charAt(0).toUpperCase();
   $('#loginBackdrop').hidden = true;
 });
+$('#userAvatar').addEventListener('click', () => {
+  $('#loginForm').reset();
+  $('#loginBackdrop').hidden = false;
+  $('#loginForm').username.focus();
+});
 
 function renderPet() {
   $('#petLevel').textContent = `LV. ${pet.level}`;
