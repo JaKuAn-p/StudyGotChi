@@ -19,6 +19,25 @@ const timeToMinutes = (time) => { const [hours, minutes] = time.split(':').map(N
 const formatTime = (time) => time.replace(':00', '.00').replace(':30', '.30');
 const saveEvents = () => localStorage.setItem('studygotchi-events-v2', JSON.stringify(events));
 const savePet = () => localStorage.setItem('studygotchi-pet', JSON.stringify(pet));
+const hourOptions = Array.from({ length: 24 }, (_, hour) => `<option value="${String(hour).padStart(2, '0')}">${String(hour).padStart(2, '0')}</option>`).join('');
+const minuteOptions = ['00', '15', '30', '45'].map((minute) => `<option value="${minute}">${minute}</option>`).join('');
+
+function setupTimePickers() {
+  document.querySelectorAll('select[name$="Hour"]').forEach((select) => { select.innerHTML = hourOptions; });
+  document.querySelectorAll('select[name$="Minute"]').forEach((select) => { select.innerHTML = minuteOptions; });
+  setTimePickerValue('start', '19:00');
+  setTimePickerValue('end', '20:00');
+}
+
+function setTimePickerValue(name, value) {
+  const [hour, minute] = value.split(':');
+  $(`select[name="${name}Hour"]`).value = hour;
+  $(`select[name="${name}Minute"]`).value = minute;
+}
+
+function getTimePickerValue(name) {
+  return `${$(`select[name="${name}Hour"]`).value}:${$(`select[name="${name}Minute"]`).value}`;
+}
 
 $('#loginForm').addEventListener('submit', (event) => {
   event.preventDefault();
@@ -179,8 +198,8 @@ function checkReminders() {
 function updatePlanPreview() {
   const form = $('#plannerForm');
   const days = Number(form.days.value) || 0;
-  const start = form.start.value;
-  const end = form.end.value;
+  const start = getTimePickerValue('start');
+  const end = getTimePickerValue('end');
   if (!start || !end || timeToMinutes(end) <= timeToMinutes(start)) {
     $('#planPreview').textContent = 'กรุณาเลือกช่วงเวลาให้เวลาสิ้นสุดหลังเวลาเริ่มต้น';
     return;
@@ -199,9 +218,12 @@ $('#closePlanner').addEventListener('click', closePlanner);
 $('#cancelPlanner').addEventListener('click', closePlanner);
 $('#plannerBackdrop').addEventListener('click', (event) => { if (event.target.id === 'plannerBackdrop') closePlanner(); });
 $('#plannerForm').addEventListener('input', updatePlanPreview);
+$('#plannerForm').addEventListener('change', updatePlanPreview);
 $('#plannerForm').addEventListener('submit', (event) => {
   event.preventDefault();
   const data = Object.fromEntries(new FormData(event.target));
+  data.start = getTimePickerValue('start');
+  data.end = getTimePickerValue('end');
   const duration = timeToMinutes(data.end) - timeToMinutes(data.start);
   const days = Number(data.days);
   if (duration <= 0 || days < 1 || days > 60) return;
@@ -240,6 +262,7 @@ $('#startReading').addEventListener('click', startReading);
 $('#finishReading').addEventListener('click', () => { killPet(); clearInterval(timerInterval); $('#timerBackdrop').hidden = true; reminderEvent = null; });
 $('#revivePet').addEventListener('click', () => { pet = { alive: true, sessions: 0, level: 1 }; savePet(); renderPet(); });
 renderCalendar();
+setupTimePickers();
 renderPet();
 checkReminders();
 setInterval(checkReminders, 1000);
