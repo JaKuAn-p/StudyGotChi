@@ -5,14 +5,7 @@ const colors = { reading: 'event-reading', review: 'event-review', exam: 'event-
 const today = new Date();
 let weekStart = new Date(today);
 weekStart.setDate(weekStart.getDate() - weekStart.getDay());
-let events = JSON.parse(localStorage.getItem('studygotchi-events')) || [
-  { id: 1, title: 'อ่านชีวะ บทที่ 3', day: 1, start: '09:00', end: '10:30', type: 'reading', description: 'สรุปเรื่องเซลล์และการลำเลียงสาร' },
-  { id: 2, title: 'ทำโจทย์คณิต ชุดที่ 2', day: 2, start: '13:00', end: '14:30', type: 'review', description: '' },
-  { id: 3, title: 'อ่านสรุปฟิสิกส์', day: 3, start: '10:00', end: '11:00', type: 'reading', description: '' },
-  { id: 4, title: 'ทบทวนศัพท์อังกฤษ', day: 4, start: '16:00', end: '17:00', type: 'review', description: '' },
-  { id: 5, title: 'สอบย่อยชีวะ', day: 5, start: '09:00', end: '10:00', type: 'exam', description: 'บทที่ 1-3' },
-  { id: 6, title: 'อ่านเคมีอินทรีย์', day: 6, start: '14:00', end: '16:00', type: 'reading', description: '' }
-];
+let events = JSON.parse(localStorage.getItem('studygotchi-events-v2')) || [];
 let editingId = null;
 const plannerToday = new Date(today);
 let reminderEvent = null;
@@ -24,7 +17,7 @@ let pet = JSON.parse(localStorage.getItem('studygotchi-pet')) || { alive: true, 
 const $ = (selector) => document.querySelector(selector);
 const timeToMinutes = (time) => { const [hours, minutes] = time.split(':').map(Number); return hours * 60 + minutes; };
 const formatTime = (time) => time.replace(':00', '.00').replace(':30', '.30');
-const saveEvents = () => localStorage.setItem('studygotchi-events', JSON.stringify(events));
+const saveEvents = () => localStorage.setItem('studygotchi-events-v2', JSON.stringify(events));
 const savePet = () => localStorage.setItem('studygotchi-pet', JSON.stringify(pet));
 
 $('#loginForm').addEventListener('submit', (event) => {
